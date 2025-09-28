@@ -43,4 +43,3 @@ export const getStocks = async () => {
   );
   return stockResponse.data.data.quotes;
 };
-//
