@@ -16,3 +16,4 @@ export class CoreEvent extends Listener<typeof Events.ChatInputCommandError> {
     }
   }
 }
+//
