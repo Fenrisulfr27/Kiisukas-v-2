@@ -26,3 +26,4 @@ export class UserCommand extends Command {
     await interaction.reply({ content: "sõnum edastatud", ephemeral: true });
   }
 }
+//

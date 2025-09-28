@@ -17,7 +17,6 @@ export const getJoinLeaveDescription = (
   const descriptionRows: string[] = [];
   descriptionRows.push(`Nimi: ${member.user.username}`);
 
-
   if (!member.joinedAt) return descriptionRows.join("\n");
   const now = Date.now();
 
@@ -32,3 +31,4 @@ export const getJoinLeaveDescription = (
 
   return descriptionRows.join("\n");
 };
+//
