@@ -29,4 +29,3 @@ export class UserListener extends Listener<Events.GuildMemberAdd> {
     await channel.send({ embeds: [embed] });
   }
 }
-//
