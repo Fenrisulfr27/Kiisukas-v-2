@@ -14,7 +14,7 @@ const getChannel = () => {
   );
   if (channel && isTextBasedChannel(channel)) return channel;
 
-  return console.log("Kanal seadistamata");
+  return console.log("jobOffers Kanal seadistamata");
 };
 
 const jobIds: number[] = [];
