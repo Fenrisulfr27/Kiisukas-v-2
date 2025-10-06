@@ -29,7 +29,6 @@ export class UserCommand extends Command {
       .setZone("Europe/Tallinn")
       .setLocale("et")
       .toFormat("d.MMMM yyyy HH:mm");
-    console.log(channel);
     const timePassedSinceCreation = humanizeDuration(
       guild.createdTimestamp - Date.now(),
       {
