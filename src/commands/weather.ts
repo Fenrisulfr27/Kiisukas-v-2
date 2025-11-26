@@ -76,4 +76,4 @@ export class UserCommand extends Command {
     return interaction.followUp({ embeds: [embed] });
   }
 }
-//khmm
+
