@@ -41,18 +41,18 @@ export class UserCommand extends Command {
 
   public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await interaction.deferReply();
-    const beaches = await beachService.getBeaches();
-    const subCommand = interaction.options.getSubcommand();
-    const searchString = interaction.options.getString("rand")!;
-    const description =
-      subCommand === "rand"
-        ? getOneBeachDescription(searchString, beaches)
-        : getBeachListDescription(beaches);
-    const embed = new EmbedBuilder()
-      .setColor(0x1abc9c)
-      .setDescription(description);
+    // const beaches = await beachService.getBeaches();
+    // const subCommand = interaction.options.getSubcommand();
+    // const searchString = interaction.options.getString("rand")!;
+    // const description =
+    //   subCommand === "rand"
+    //     ? getOneBeachDescription(searchString, beaches)
+    //     : getBeachListDescription(beaches);
+    // const embed = new EmbedBuilder()
+    //   .setColor(0x1abc9c)
+    //   .setDescription(description);
 
-    interaction.followUp({ embeds: [embed] });
+    interaction.followUp("Rannailm on talvepuhkusel.");
   }
 }
 
