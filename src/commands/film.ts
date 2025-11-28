@@ -37,6 +37,7 @@ export class UserCommand extends Command {
         ),
     );
   }
+
   public override async autocompleteRun(
     interaction: Command.AutocompleteInteraction,
   ) {
@@ -45,7 +46,9 @@ export class UserCommand extends Command {
     const { data } = await getMovie(focusedValue);
     const limit = 5;
     const autocompleteOptions = data.results.slice(0, limit).map((film) => ({
-      name: film.title.substring(0, 100),
+      name: `${film.title.substring(0, 100)} - ${
+        film.release_date.split("-")[0]
+      }`,
       value: film.title.substring(0, 100),
     }));
 
@@ -56,7 +59,7 @@ export class UserCommand extends Command {
     const film = interaction.options.getString("film", true);
     const movieResponse = await getMovie(film);
     if (!movieResponse || movieResponse.data.results.length === 0) {
-      return await interaction.followUp(`Vastet filmile ${film} ei leitud.`);
+      return await interaction.reply(`Vastet filmile ${film} ei leitud.`);
     }
     const {
       title,
@@ -68,13 +71,12 @@ export class UserCommand extends Command {
       vote_count,
     } = movieResponse.data.results[0];
 
-    const releaseYear = new Date(release_date).getFullYear();
-
     const movieResult2 = await axios.get<Movie>(
       `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.MOVIEDB_API_KEY}`,
     );
 
     const { imdb_id, runtime, genres } = movieResult2.data;
+    const releaseYear = new Date(release_date).getFullYear();
 
     const movieGenre = genres
       .slice(0, 2)
