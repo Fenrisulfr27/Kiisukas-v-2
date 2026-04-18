@@ -58,7 +58,7 @@ export class UserCommand extends Command {
     const embed = new EmbedBuilder()
       .setColor("#71368A")
       .setTitle(serverName)
-      .setURL("https://kunstikohvik.ee/")
+      .setURL("https://dekadents.eu/")
       .setThumbnail(getGuildLogo)
       .addFields({
         name: `👥 **${getMemberCount} Kasutajat**`,
