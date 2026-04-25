@@ -1,5 +1,5 @@
 app = "kiisukas-v-2"
-primary_region = "arn"
+primary_region = "ams"
 
 [build]
   builder = "heroku/builder:22"
