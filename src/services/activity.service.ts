@@ -10,11 +10,9 @@ type RecordMessageInput = {
 };
 
 function countWords(text: string): number {
-  const trimmed = text.trim();
-  if (!trimmed) return 0;
-  return trimmed.split(/\s+/u).length;
+  const matches = text.match(/[\p{L}\p{N}]+(?:['’.-][\p{L}\p{N}]+)*/gu);
+  return matches?.length ?? 0;
 }
-
 function countLines(text: string): number {
   const trimmed = text.trim();
   if (!trimmed) return 0;
@@ -147,7 +145,7 @@ export class ActivityService {
     }>;
   }
   public static getGuildTotals(guildId: string) {
-  const stmt = db.prepare(`
+    const stmt = db.prepare(`
     SELECT
       COALESCE(SUM(message_count), 0) AS message_count,
       COALESCE(SUM(line_count), 0) AS line_count,
@@ -157,11 +155,11 @@ export class ActivityService {
     WHERE guild_id = ?
   `);
 
-  return stmt.get(guildId) as {
-    message_count: number;
-    line_count: number;
-    word_count: number;
-    char_count: number;
-  };
-}
+    return stmt.get(guildId) as {
+      message_count: number;
+      line_count: number;
+      word_count: number;
+      char_count: number;
+    };
+  }
 }

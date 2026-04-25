@@ -90,7 +90,7 @@ export class StatsCommand extends Command {
 
       const embed = new EmbedBuilder()
         .setColor("#71368A")
-        .setTitle(`Statistika: ${selectedUser.username}`)
+        .setTitle(`Statistika: ${selectedUser.displayName}`)
         .addFields(
           {
             name: "Ridu",
