@@ -23,7 +23,7 @@
     "dotenv": "^16.3.1",
     "humanize-duration": "^3.29.0",
     "jsdom": "^23.0.1",
-    "luxon": "^3.3.0",
+    "luxon": "^3.7.2",
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {

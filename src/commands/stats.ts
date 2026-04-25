@@ -1,7 +1,44 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Command } from "@sapphire/framework";
 import { EmbedBuilder } from "discord.js";
+import { DateTime } from "luxon";
 import { ActivityService } from "../services/activity.service";
+
+const TALLINN_TIMEZONE = "Europe/Tallinn";
+
+function formatTallinnDate(value: string | number | Date): string {
+  let dateTime: DateTime;
+
+  if (value instanceof Date) {
+    dateTime = DateTime.fromJSDate(value, { zone: "utc" });
+  } else if (typeof value === "number") {
+    // Kui timestamp on sekundites, teisenda milliseks.
+    dateTime =
+      value < 1_000_000_000_000
+        ? DateTime.fromSeconds(value, { zone: "utc" })
+        : DateTime.fromMillis(value, { zone: "utc" });
+  } else {
+    const normalizedValue = value.includes("T")
+      ? value
+      : value.replace(" ", "T");
+
+    const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(normalizedValue);
+
+    dateTime = DateTime.fromISO(
+      hasTimezone ? normalizedValue : `${normalizedValue}Z`,
+      { zone: "utc" },
+    );
+
+    if (!dateTime.isValid) {
+      dateTime = DateTime.fromJSDate(new Date(value));
+    }
+  }
+
+  return dateTime
+    .setZone(TALLINN_TIMEZONE)
+    .setLocale("et")
+    .toFormat("d.M.yyyy, HH:mm:ss");
+}
 
 @ApplyOptions<Command.Options>({
   name: "stats",
@@ -26,6 +63,7 @@ export class StatsCommand extends Command {
     interaction: Command.ChatInputCommandInteraction,
   ) {
     const guild = interaction.guild;
+
     if (!guild) {
       await interaction.reply({
         content: "Seda käsku saab kasutada ainult serveris.",
@@ -72,7 +110,7 @@ export class StatsCommand extends Command {
         )
         .setFooter({
           text: stats.last_message_at
-            ? `Viimane sõnum: ${new Date(stats.last_message_at).toLocaleString("et-EE")}`
+            ? `Viimane sõnum: ${formatTallinnDate(stats.last_message_at)}`
             : "Viimase sõnumi aeg puudub",
         });
 
@@ -110,7 +148,9 @@ export class StatsCommand extends Command {
             ? (entry.word_count / entry.line_count).toFixed(2)
             : "0.00";
 
-        return `${index + 1}. ${name} - ${entry.line_count} rida ~ ${avgWordsPerLine} sõna/reas`;
+        return `${index + 1}. ${name} - ${
+          entry.line_count
+        } rida ~ ${avgWordsPerLine} sõna/reas`;
       }),
     );
 
