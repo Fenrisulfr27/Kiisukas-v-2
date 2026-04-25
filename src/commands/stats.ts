@@ -162,7 +162,7 @@ export class StatsCommand extends Command {
             ? (entry.word_count / entry.line_count).toFixed(2)
             : "0.00";
 
-        return `${index + 1}. ${name} - ${entry.word_count} sõna, ${
+        return `${index + 1}. ${name} - ${
           entry.line_count
         } rida ~ ${avgWordsPerLine} sõna/reas`;
       }),
