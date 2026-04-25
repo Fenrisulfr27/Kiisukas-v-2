@@ -1,6 +1,6 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Command } from "@sapphire/framework";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, Guild } from "discord.js";
 import { DateTime } from "luxon";
 import { ActivityService } from "../services/activity.service";
 
@@ -12,7 +12,6 @@ function formatTallinnDate(value: string | number | Date): string {
   if (value instanceof Date) {
     dateTime = DateTime.fromJSDate(value, { zone: "utc" });
   } else if (typeof value === "number") {
-    // Kui timestamp on sekundites, teisenda milliseks.
     dateTime =
       value < 1_000_000_000_000
         ? DateTime.fromSeconds(value, { zone: "utc" })
@@ -38,6 +37,23 @@ function formatTallinnDate(value: string | number | Date): string {
     .setZone(TALLINN_TIMEZONE)
     .setLocale("et")
     .toFormat("d.M.yyyy, HH:mm:ss");
+}
+
+async function getGuildDisplayName(
+  guild: Guild,
+  userId: string,
+): Promise<string> {
+  try {
+    const member = await guild.members.fetch(userId);
+    return member.displayName;
+  } catch {
+    try {
+      const user = await guild.client.users.fetch(userId);
+      return user.globalName ?? user.username;
+    } catch {
+      return userId;
+    }
+  }
 }
 
 @ApplyOptions<Command.Options>({
@@ -75,11 +91,16 @@ export class StatsCommand extends Command {
     const selectedUser = interaction.options.getUser("kasutaja");
 
     if (selectedUser) {
+      const selectedDisplayName = await getGuildDisplayName(
+        guild,
+        selectedUser.id,
+      );
+
       const stats = ActivityService.getUserStats(guild.id, selectedUser.id);
 
       if (!stats) {
         await interaction.reply({
-          content: `${selectedUser.username} kohta statistikat veel ei ole.`,
+          content: `${selectedDisplayName} kohta statistikat veel ei ole.`,
           ephemeral: true,
         });
         return;
@@ -90,7 +111,7 @@ export class StatsCommand extends Command {
 
       const embed = new EmbedBuilder()
         .setColor("#71368A")
-        .setTitle(`Statistika: ${selectedUser.displayName}`)
+        .setTitle(`Statistika: ${selectedDisplayName}`)
         .addFields(
           {
             name: "Ridu",
@@ -134,21 +155,14 @@ export class StatsCommand extends Command {
 
     const lines = await Promise.all(
       topUsers.map(async (entry, index) => {
-        let name = entry.user_id;
-
-        try {
-          const member = await guild.members.fetch(entry.user_id);
-          name = member.displayName;
-        } catch {
-          // fallback jääb user_id peale
-        }
+        const name = await getGuildDisplayName(guild, entry.user_id);
 
         const avgWordsPerLine =
           entry.line_count > 0
             ? (entry.word_count / entry.line_count).toFixed(2)
             : "0.00";
 
-        return `${index + 1}. ${name} - ${
+        return `${index + 1}. ${name} - ${entry.word_count} sõna, ${
           entry.line_count
         } rida ~ ${avgWordsPerLine} sõna/reas`;
       }),
